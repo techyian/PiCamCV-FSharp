@@ -1,10 +1,10 @@
 # PiCamCV-FSharp
 A port of @neutmute 's PiCamCV project written in F#. It currently makes use of the following technologies:
 
-1) Alchemy WebSocket Server - https://github.com/Olivine-Labs/Alchemy-Websockets
-2) EmguCV - http://www.emgu.com/wiki/index.php/Main_Page
-3) ASP.NET
-4) F#
+1. Alchemy WebSocket Server - https://github.com/Olivine-Labs/Alchemy-Websockets
+2. EmguCV - http://www.emgu.com/wiki/index.php/Main_Page
+3. ASP.NET
+4. F#
 
 ## Project motivation
 I wanted to find an imaging library which would be compatible with my Raspberry Pi which would form part of a larger project which I will discuss later.
