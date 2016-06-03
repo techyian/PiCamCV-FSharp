@@ -5,9 +5,9 @@ VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "LibPiCamCV", "LibPiCamCV\LibPiCamCV.fsproj", "{4D5E6F73-9281-4661-BC99-317F4A2E7D8E}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TankWeb", "TankWeb\TankWeb.fsproj", "{362C8AB9-83DB-442F-A62F-C669C20DFADC}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "PiCamWeb", "PiCamWeb\PiCamWeb.fsproj", "{362C8AB9-83DB-442F-A62F-C669C20DFADC}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TankServer", "TankServer\TankServer.fsproj", "{3D0FCAA3-D738-422E-A150-B456ECECD734}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "PiCamServer", "PiCamServer\PiCamServer.fsproj", "{3D0FCAA3-D738-422E-A150-B456ECECD734}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

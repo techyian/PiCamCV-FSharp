@@ -9,7 +9,7 @@
     <ProjectGuid>3d0fcaa3-d738-422e-a150-b456ececd734</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>TankServer</RootNamespace>
-    <AssemblyName>TankServer</AssemblyName>
+    <AssemblyName>PiCamServer</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFSharpCoreVersion>4.4.0.0</TargetFSharpCoreVersion>
