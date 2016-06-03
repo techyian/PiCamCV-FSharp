@@ -1,0 +1,114 @@
+<div class="jumbotron">
+    <h1>F# + ASP.NET</h1>
+    <p class="lead">
+        Pure F# ASP.NET web apps are a combination of several excellent technologies that allow you to build complex web applications in less time. To make your experience
+        even more appealing, we recommend following the instructions on
+        <a href="http://bloggemdano.blogspot.com/2013/11/adding-new-items-to-pure-f-aspnet.html">this blog post</a> and
+        installing the <a href="http://visualstudiogallery.msdn.microsoft.com/f1dae7fe-1ecc-4f1b-86b5-32a2970d012a?SRC=Home">F# Web Item Templates</a>.
+    </p>
+    <p>To learn more about ASP.NET MVC or Web API visit the <a href="http://go.microsoft.com/fwlink/?LinkId=301870">ASP.NET site</a>.</p>
+    <p>To learn more about web programming in F# visit <a href="http://fsharp.org/webstacks/">fsharp.org</a></p>
+
+    <a role="button" class="btn btn-default btn-large" id="startStopBtn">Start/Stop</a>
+
+    <div id="status"></div>
+   
+    <img id="testImg" src="" />
+
+</div>
+
+@section Scripts {
+    
+    <script type="text/javascript" src="~/Scripts/alchemy-client.js"></script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+                        
+            var running = false;
+            var camera;
+            var AlchemyServer;
+                                    
+            function Connect() {
+                // If we're using the Flash fallback, we need Flash.
+                if (!window.WebSocket && !swfobject.hasFlashPlayerVersion('10.0.0')) {
+                alert('Flash Player >= 10.0.0 is required.');
+                return;
+                }
+
+                // Set up the Alchemy client object
+                AlchemyServer = new Alchemy({
+                    Server: window.location.host,
+                    Port: '81',
+                    Action: 'chat',
+                    DebugMode: true
+                });
+
+                console.log('Connecting...');
+                $('#status').removeClass('offline').addClass('pending').text('Connecting...');
+
+                AlchemyServer.Connected = function() {
+                    $('#status').removeClass('pending').addClass('online').text('Connected...');
+                    console.log('Connection established!');
+                    running = !running;
+                };
+
+                AlchemyServer.Disconnected = function () {
+                    $('#status').removeClass('online').addClass('offline').text('Disconnected...');
+                    console.log('Connection closed.');
+                    running = !running;
+                };
+
+                AlchemyServer.MessageReceived = function(event) {
+                ParseResponse(event.data);
+                };
+
+                AlchemyServer.Start();
+            };
+            
+            function ParseResponse(response) {
+                //var data = JSON.parse(response);                
+                $('#testImg').attr('src', 'data:image/jpg;base64,' + response)
+                // The Chat server demo sends back a responsetype to let us know how to parse the message.
+                /*if (data.Type == 0) {
+                var message = data.Data.Name + ' connected!';
+                LogMessage(message);
+                }
+                else if (data.Type == 1) {
+                var message = data.Data.Name + ' disconnected!';
+                LogMessage(message);
+                }
+                else if (data.Type == 2 && data.Data.Name != me.Name) {
+                // We don't display it if it's from ourselves, because we display our own messages immediately
+                // see the jQuery bindings later on for more info)
+                var message = data.Data.Name + ': ' + data.Data.Message;
+                LogMessage(message);
+                }
+                else if (data.Type == 3) {
+                var message = data.Data.Message;
+                LogMessage(message);
+                }
+                else if (data.Type == 4) {
+                // Set the online users, and show the list of users if you hover over the number.
+                $('#onlineUsers').text(data.Data.Users.length).attr('title', data.Data.Users.join('\n'));
+                }*/
+                
+            }
+            
+            $('#startStopBtn').click(function () {                
+                if(running)                    
+                {
+                    AlchemyChatServer.Send({ state: "disconnect" });                    
+                }                    
+                else
+                {                  
+                    Connect();                                        
+                }                               
+                
+            })
+            
+        });
+
+</script>
+
+}
