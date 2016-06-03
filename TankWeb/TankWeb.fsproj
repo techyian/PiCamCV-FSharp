@@ -13,7 +13,7 @@
     <OutputType>Library</OutputType>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <RootNamespace>FSharpWeb2</RootNamespace>
-    <AssemblyName>FSharpWeb2</AssemblyName>
+    <AssemblyName>TankWeb</AssemblyName>
     <UseIISExpress>true</UseIISExpress>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <TargetFrameworkProfile />
