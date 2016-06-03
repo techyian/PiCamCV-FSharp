@@ -18,7 +18,7 @@ I also wanted to try to learn F#, so this is my first attempt, and I will look a
 2. Download Emgu CV from https://sourceforge.net/projects/emgucv/files/
 3. After installing, find the x86 directory within the install folder. Copy the .dll files into your bin/debug folder for the PiCamServer and LibPiCamCV projects as they both depend on the native C binaries.
 4. Set the PiCamServer project as your startup project and run. This will load the Alchemy WebSocket server that's used.
-5. To browse to the Web Client, open IIS and add a new application. Set the location of the application to the TankWeb project folder. You may need to grant the application pool
+5. To browse to the Web Client, open IIS and add a new application. Set the location of the application to the PiCamWeb project folder. You may need to grant the application pool
 access to the folder or you may receive an unauthorised error.
 
 
