@@ -12,7 +12,7 @@
         [<DefaultValue>] val mutable File : FileInfo    
         member val Device = CaptureDevice.Usb with get, set
         member val CameraIndex = 0 with get, set        
-        member val Config = new CaptureConfig() with get, set
+        member val Config = new CaptureConfig(new Resolution(300, 300), 0, 0, false) with get, set
         
     [<AbstractClass; Sealed>]
     type CaptureFactory() =
@@ -26,7 +26,7 @@
             
             match request.File with
             | null -> if(request.Device = CaptureDevice.Pi) then 
-                          let cap = new CapturePi(request.Config) :>  ICaptureGrab
+                          let cap = new CapturePi(request.Config) :>  ICaptureGrab                                                    
                           cap
                       else
                           let usbCapture = new CaptureUsb(request.CameraIndex) :>  ICaptureGrab                  

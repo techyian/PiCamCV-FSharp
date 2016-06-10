@@ -7,7 +7,7 @@ module CaptureConfigExtensions =
 
     type CaptureConfig with
         static member GetCaptureProperties(capture: ICaptureGrab) = 
-            let settings = new CaptureConfig()
+            let settings = new CaptureConfig(new Resolution(300, 300), 0, 0, false)
             settings.Res.Height <- Convert.ToInt32(capture.GetCaptureProperty(CapProp.FrameHeight))
             settings.Res.Width <- Convert.ToInt32(capture.GetCaptureProperty(CapProp.FrameWidth))
             settings.Framerate <- Convert.ToInt32(capture.GetCaptureProperty(CapProp.Fps))

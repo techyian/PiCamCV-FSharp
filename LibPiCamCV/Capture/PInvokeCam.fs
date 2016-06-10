@@ -9,6 +9,15 @@ module CvInvokeRaspiCamCV =
     open Emgu.CV.CvEnum
     open PiCamCV.Capture.Interfaces
 
+
+    let osCheck = 
+        let p = Environment.OSVersion.Platform.ToString()
+        match p with
+        | "4" | "6" | "128" -> "unix"
+        | _ -> "other"
+
+
+
  #if UNIX
     // Use this for Pi USB mode: [<Literal>]let CVLibrary =  "opencv_videoio"
     [<Literal>]
@@ -24,10 +33,13 @@ module CvInvokeRaspiCamCV =
     [<Literal>]
     let EntryPointGetProperty = "raspiCamCvGetCaptureProperty"
     [<Literal>]
-    let EntryPointSetProperty = "raspiCamCvSetCaptureProperty"
+    let EntryPointSetProperty = "raspiCamCvSetCaptureProperty"    
 #else
+    // Use this for Pi USB mode: 
     [<Literal>]
-    let CVLibrary : string = "cvextern.dll";
+    let CVLibrary =  "opencv_videoio"
+    //[<Literal>]
+    //let CVLibrary : string = "cvextern";
     [<Literal>]
     let EntryPointCapture = "cvCreateCameraCapture"
     [<Literal>]
@@ -50,7 +62,7 @@ module CvInvokeRaspiCamCV =
     [<DllImport(CVLibrary, EntryPoint=EntryPointCapture, CallingConvention = CallingConvention.Cdecl)>]
     extern IntPtr cvCreateCameraCapture(int index)
 
-    [<DllImport(CVLibrary, EntryPoint=EntryPointCapture2, CallingConvention = CallingConvention.Cdecl)>]
+    [<DllImport(CVLibrary, EntryPoint=EntryPointCapture, CallingConvention = CallingConvention.Cdecl)>]
     extern IntPtr cvCreateCameraCapture2(int index, CaptureConfig config);
        
     /// <summary>

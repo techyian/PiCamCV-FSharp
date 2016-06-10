@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\EmguCV.3.0.0\build\EmguCV.props" Condition="Exists('..\packages\EmguCV.3.0.0\build\EmguCV.props')" />
+  <Import Project="..\packages\EmguCV.3.1.0\build\EmguCV.props" Condition="Exists('..\packages\EmguCV.3.1.0\build\EmguCV.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -27,9 +27,9 @@
     <Optimize>false</Optimize>
     <Tailcalls>false</Tailcalls>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>bin\Debug\TankServer.XML</DocumentationFile>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
@@ -67,58 +67,24 @@
     <Compile Include="Program.fs" />
     <None Include="App.config" />
     <Content Include="packages.config" />
+    <Content Include="OpenTK.dll.config" />
+    <Content Include="License-LGPL.txt" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Alchemy">
       <HintPath>..\packages\Alchemy.2.2.1\lib\net40\Alchemy.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Emgu.CV">
-      <HintPath>..\packages\EmguCV.3.0.0\lib\net451\Emgu.CV.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Emgu.CV.Contrib">
-      <HintPath>..\packages\EmguCV.3.0.0\lib\net451\Emgu.CV.Contrib.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Emgu.CV.Cuda">
-      <HintPath>..\packages\EmguCV.3.0.0\lib\net451\Emgu.CV.Cuda.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Emgu.CV.ML">
-      <HintPath>..\packages\EmguCV.3.0.0\lib\net451\Emgu.CV.ML.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Emgu.CV.OCR">
-      <HintPath>..\packages\EmguCV.3.0.0\lib\net451\Emgu.CV.OCR.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Emgu.CV.Shape">
-      <HintPath>..\packages\EmguCV.3.0.0\lib\net451\Emgu.CV.Shape.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Emgu.CV.Stitching">
-      <HintPath>..\packages\EmguCV.3.0.0\lib\net451\Emgu.CV.Stitching.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Emgu.CV.Superres">
-      <HintPath>..\packages\EmguCV.3.0.0\lib\net451\Emgu.CV.Superres.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Emgu.CV.UI">
-      <HintPath>..\packages\EmguCV.3.0.0\lib\net451\Emgu.CV.UI.dll</HintPath>
+      <HintPath>..\packages\EmguCV.3.1.0\lib\net30\Emgu.CV.UI.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Emgu.CV.UI.GL">
-      <HintPath>..\packages\EmguCV.3.0.0\lib\net451\Emgu.CV.UI.GL.dll</HintPath>
+      <HintPath>..\packages\EmguCV.3.1.0\lib\net30\Emgu.CV.UI.GL.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Emgu.CV.VideoStab">
-      <HintPath>..\packages\EmguCV.3.0.0\lib\net451\Emgu.CV.VideoStab.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Emgu.Util">
-      <HintPath>..\packages\EmguCV.3.0.0\lib\net451\Emgu.Util.dll</HintPath>
+    <Reference Include="Emgu.CV.World">
+      <HintPath>..\packages\EmguCV.3.1.0\lib\net30\Emgu.CV.World.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="mscorlib" />
@@ -129,10 +95,24 @@
       <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="OpenTK">
+      <HintPath>..\packages\OpenTK.1.1.2225.0\lib\net20\OpenTK.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="OpenTK.GLControl">
+      <HintPath>..\packages\OpenTK.GLControl.1.1.2225.0\lib\net20\OpenTK.GLControl.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Numerics" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="ZedGraph">
+      <HintPath>..\packages\ZedGraph.5.1.7\lib\net35-Client\ZedGraph.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LibPiCamCV\LibPiCamCV.fsproj">
@@ -145,10 +125,10 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\EmguCV.3.0.0\build\EmguCV.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EmguCV.3.0.0\build\EmguCV.props'))" />
-    <Error Condition="!Exists('..\packages\EmguCV.3.0.0\build\EmguCV.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EmguCV.3.0.0\build\EmguCV.targets'))" />
+    <Error Condition="!Exists('..\packages\EmguCV.3.1.0\build\EmguCV.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EmguCV.3.1.0\build\EmguCV.props'))" />
+    <Error Condition="!Exists('..\packages\EmguCV.3.1.0\build\EmguCV.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EmguCV.3.1.0\build\EmguCV.targets'))" />
   </Target>
-  <Import Project="..\packages\EmguCV.3.0.0\build\EmguCV.targets" Condition="Exists('..\packages\EmguCV.3.0.0\build\EmguCV.targets')" />
+  <Import Project="..\packages\EmguCV.3.1.0\build\EmguCV.targets" Condition="Exists('..\packages\EmguCV.3.1.0\build\EmguCV.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

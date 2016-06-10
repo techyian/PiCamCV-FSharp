@@ -38,7 +38,7 @@
 
                 // Set up the Alchemy client object
                 AlchemyServer = new Alchemy({
-                    Server: window.location.host,
+                    Server: '192.168.1.209',
                     Port: '81',
                     Action: 'chat',
                     DebugMode: true
@@ -68,6 +68,11 @@
             
             function ParseResponse(response) {
                 //var data = JSON.parse(response);                
+                if (response == "null")
+                    console.log("received null");
+
+                console.log(response);
+
                 $('#testImg').attr('src', 'data:image/jpg;base64,' + response)
                 // The Chat server demo sends back a responsetype to let us know how to parse the message.
                 /*if (data.Type == 0) {

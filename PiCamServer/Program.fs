@@ -68,7 +68,7 @@
         (* The CaptureConfig class is used to hold individual properties which can be used to manipulate the image returned via EmguCV. The properties
         in this class include setting the width/height of the image and bitrate/framerate if we so wish. *)
         member this.GenerateCaptureConfig() : CaptureConfig = 
-            let config = new CaptureConfig()        
+            let config = new CaptureConfig(new Resolution(300, 300), 0, 0, false)        
             config.Res.Height <- 200
             config.Res.Width <- 300
             config
@@ -81,8 +81,9 @@
                                 if(not cameraCancellationToken.IsCancellationRequested) then
                                     let cons = consumers.Item 0
                                     match box cons with
-                                    | null -> ()
+                                    | null ->  broadcast("null")
                                     | _    ->  let imageByteArray = cons.ImageGrabbedHandler
+                                               Console.WriteLine(imageByteArray)
                                                let base64Str = Convert.ToBase64String(imageByteArray)                                             
                                                broadcast base64Str |> ignore)
                                    
@@ -120,6 +121,12 @@
             request.CameraIndex <- index
             request.Device <- device
             let capture = CaptureFactory.GetCapture request
+            Console.WriteLine("DEBUG: Attempting to start camera")
+            capture.Start()
+            match box capture with
+            | null -> Console.WriteLine("capture is null")
+            | _ -> Console.WriteLine("capture is not null")
+                        
             this.StartCamera() |> ignore
             this.SetupCameraConsumers capture
             ignore
@@ -140,7 +147,7 @@
     let main argv = 
         let tankSession = new TankSession()
         let serverInstance = tankSession.CreateServerInstance()        
-        tankSession.SetupCapture(0, CaptureDevice.Usb) |> ignore
+        tankSession.SetupCapture(0, CaptureDevice.Pi) |> ignore
         serverInstance.Start()
         
         let rec exitCommand() = 
