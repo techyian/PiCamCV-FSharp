@@ -17,7 +17,7 @@
     type UpdateValues = { Status: string; Width: double; Height: double; Colour: int  }
     type ReturnValues = { Type: string; Message: string}
 
-    type TankSession() as this = 
+    type WebSession() as this = 
            
         [<DefaultValue>]
         val mutable CamColour : CameraColour
@@ -187,9 +187,9 @@
     [<EntryPoint>]
     let main argv = 
                 
-        let tankSession = new TankSession()
-        let serverInstance = tankSession.CreateServerInstance()        
-        tankSession.SetupCapture(0, CaptureDevice.Pi) |> ignore
+        let webSession = new WebSession()
+        let serverInstance = webSession.CreateServerInstance()        
+        webSession.SetupCapture(0, CaptureDevice.Pi) |> ignore
         serverInstance.Start()
         
         let rec exitCommand() = 
