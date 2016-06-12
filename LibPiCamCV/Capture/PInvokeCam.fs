@@ -18,8 +18,7 @@ module CvInvokeRaspiCamCV =
 
 
 
- #if UNIX
-    // Use this for Pi USB mode: [<Literal>]let CVLibrary =  "opencv_videoio"
+ #if PICAM    
     [<Literal>]
     let CVLibrary = "raspicamcv";
     [<Literal>]
@@ -33,17 +32,31 @@ module CvInvokeRaspiCamCV =
     [<Literal>]
     let EntryPointGetProperty = "raspiCamCvGetCaptureProperty"
     [<Literal>]
-    let EntryPointSetProperty = "raspiCamCvSetCaptureProperty"    
-#else
-    // Use this for Pi USB mode: 
+    let EntryPointSetProperty = "raspiCamCvSetCaptureProperty"   
+#endif 
+#if PIUSBCAM
     [<Literal>]
     let CVLibrary =  "opencv_videoio"
-    //[<Literal>]
-    //let CVLibrary : string = "cvextern";
     [<Literal>]
     let EntryPointCapture = "cvCreateCameraCapture"
     [<Literal>]
-    let EntryPointCapture2 = "NOT SUPPORTED1"
+    let EntryPointCapture2 = "cvCreateCameraCapture"
+    [<Literal>]
+    let EntryPointQuery = "cvQueryFrame"
+    [<Literal>]
+    let EntryPointRelease = "cvReleaseCapture"
+    [<Literal>]
+    let EntryPointGetProperty = "cvGetCaptureProperty"
+    [<Literal>]
+    let EntryPointSetProperty = "cvSetCaptureProperty"
+#endif
+#if WINUSBCAM    
+    [<Literal>]
+    let CVLibrary : string = "cvextern";
+    [<Literal>]
+    let EntryPointCapture = "cvCreateCameraCapture"
+    [<Literal>]
+    let EntryPointCapture2 = ""cvCreateCameraCapture""
     [<Literal>]
     let EntryPointQuery = "cvQueryFrame"
     [<Literal>]

@@ -48,7 +48,17 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'UNIX|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <OutputPath>bin\UNIX\</OutputPath>
-    <DefineConstants>UNIX</DefineConstants>
+    <DefineConstants>PICAM</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'WINUSBCAM|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DefineConstants>WINUSBCAM</DefineConstants>
+    <OutputPath>bin\WINUSBCAM\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'PIUSBCAM|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DefineConstants>PIUSBCAM</DefineConstants>
+    <OutputPath>bin\PIUSBCAM\</OutputPath>
   </PropertyGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '11.0'">

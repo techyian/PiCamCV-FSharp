@@ -10,9 +10,9 @@
     [<AbstractClass>]  
     type BaseCameraConsumer(capture: ICaptureGrab) as this = 
                 
-        abstract member ImageGrabbedHandler : byte[] with get
+        abstract member ImageGrabbedHandler : camColour : CameraColour * camHeight : double * camWidth : double -> byte[] with get
 
         interface ICameraConsumer with
             member val CameraCapture = capture with get, set            
-            member x.ImageGrabbedHandler = this.ImageGrabbedHandler
+            member x.ImageGrabbedHandler = this.ImageGrabbedHandler(CameraColour.Bgr, 300.0, 300.0)
                 

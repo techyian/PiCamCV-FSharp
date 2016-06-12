@@ -12,7 +12,38 @@
     <a role="button" class="btn btn-default btn-large" id="startStopBtn">Start/Stop</a>
 
     <div id="status"></div>
-   
+
+    <h4>Controls</h4>
+
+    <div class="form-group">
+        <label for="width">Width</label>
+        <input type="text" id="width" class="form-control" placeholder="Width" />        
+    </div>
+
+    <div class="form-group">
+        <label for="width">Height</label>
+        <input type="text" id="height" class="form-control" placeholder="Height" />
+    </div>
+
+    <div class="form-group">
+        <label for="colour">Colour</label>
+        <select id="colour" class="form-control">
+            <option value="0">Gray</option>
+            <option value="1">Bgr</option>
+            <option value="2">Bgra</option>
+            <option value="3">Hsv</option>
+            <option value="4">Hls</option>
+            <option value="5">Lab</option>
+            <option value="6">Luv</option>
+            <option value="7">Xyz</option>
+            <option value="8">Ycc</option>
+        </select>                
+    </div>
+
+    <a role="button" id="submitBtn" class="btn btn-primary">Save</a>
+
+    <div class="clearfix"></div>
+       
     <img id="testImg" src="" />
 
 </div>
@@ -67,43 +98,33 @@
             };
             
             function ParseResponse(response) {
-                //var data = JSON.parse(response);                
-                if (response == "null")
-                    console.log("received null");
-
-                console.log(response);
-
-                $('#testImg').attr('src', 'data:image/jpg;base64,' + response)
-                // The Chat server demo sends back a responsetype to let us know how to parse the message.
-                /*if (data.Type == 0) {
-                var message = data.Data.Name + ' connected!';
-                LogMessage(message);
-                }
-                else if (data.Type == 1) {
-                var message = data.Data.Name + ' disconnected!';
-                LogMessage(message);
-                }
-                else if (data.Type == 2 && data.Data.Name != me.Name) {
-                // We don't display it if it's from ourselves, because we display our own messages immediately
-                // see the jQuery bindings later on for more info)
-                var message = data.Data.Name + ': ' + data.Data.Message;
-                LogMessage(message);
-                }
-                else if (data.Type == 3) {
-                var message = data.Data.Message;
-                LogMessage(message);
-                }
-                else if (data.Type == 4) {
-                // Set the online users, and show the list of users if you hover over the number.
-                $('#onlineUsers').text(data.Data.Users.length).attr('title', data.Data.Users.join('\n'));
-                }*/
+                var data = JSON.parse(response);
                 
+                if (data.Type == "image") {
+                    $('#testImg').attr('src', 'data:image/jpg;base64,' + data.Message)
+                }
+                else {
+                    console.log("error: " + data.Message)
+                }
+                                
             }
             
+            $('#submitBtn').click(function () {
+
+                if (running) {
+                    var height = $('#height').val();
+                    var width = $('#width').val();
+                    var colour = $('#colour').val();
+
+                    AlchemyServer.Send({ Status: "connect", Width: width, Height: height, Colour: colour });
+                }
+
+            })
+
             $('#startStopBtn').click(function () {                
                 if(running)                    
                 {
-                    AlchemyChatServer.Send({ state: "disconnect" });                    
+                    AlchemyServer.Send({ state: "disconnect" });
                 }                    
                 else
                 {                  

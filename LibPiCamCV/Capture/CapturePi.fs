@@ -17,79 +17,42 @@
            
     type CapturePi(camIndex: int, config: CaptureConfig) as this = 
         inherit UnmanagedObject()
-         
+        
+        [<DefaultValue>] 
+        val mutable Config : CaptureConfig
          
         //CancellationToken for our long running task 'StartCamera' and is used to signal cancelling of this task via its Cancel method.
         let cameraCancellationToken = new CancellationTokenSource()  
                 
         let mutable ptr = this._ptr
-
+                
         let mutable grabState = GrabState.Stopped
                 
         let imageGrabbed = new Event<EventHandler, EventArgs>()
 
         let wait(millisecond : int) = Thread.Sleep(millisecond)
-                        
-//        let grab = 
-//            if(ptr = IntPtr.Zero) then
-//                Console.WriteLine("DEBUG: Failing grab - ptr = Zero")
-//                false
-//            else 
-//                Console.WriteLine("DEBUG: Triggering event grab")
-//                imageGrabbed.Trigger(this, EventArgs.Empty)
-//                true
-//        
-//        let run =                         
-//            let del = Action<CancellationToken>(fun (token: CancellationToken) ->               
-//                    let rec loop() =                        
-//                        if (not cameraCancellationToken.IsCancellationRequested) then
-//                            Console.WriteLine("DEBUG: Looping")
-//                            match grabState with
-//                            | GrabState.Pause -> 
-//                                                Console.WriteLine("DEBUG: Paused state")
-//                                                wait(50)
-//                            | GrabState.Stopped | GrabState.Stopping ->
-//                                                Console.WriteLine("DEBUG: Stopped state")
-//                                                wait(50)
-//                            | GrabState.Running ->                              
-//                                                try
-//                                                    if(not grab) then 
-//                                                        Console.WriteLine("DEBUG: Couldn't grab")
-//                                                        grabState <- GrabState.Stopping
-//                                                with
-//                                                | ex -> 
-//                                                    grabState <- GrabState.Stopped
-//                                                    Console.WriteLine(ex.Message)
-//                                                                                   
-//                            wait(50)
-//                            loop()                                                
-//                    loop()
-//                    )
-//            Task.Factory.StartNew(fun () -> del.Invoke(cameraCancellationToken.Token), 
-//                                            cameraCancellationToken.Token, TaskCreationOptions.LongRunning, 
-//                                            TaskScheduler.Default);
-           
 
-        let initCapture (camIndex: int, config: CaptureConfig) =           
-            Console.WriteLine("DEBUG: About to INIT.")
+        let initCapture () =           
+            Console.WriteLine("DEBUG: About to INIT.")                  
             match box config.Res with
-            | null -> ptr <- CvInvokeRaspiCamCV.cvCreateCameraCapture2(camIndex, config)
+            | null -> ptr <- CvInvokeRaspiCamCV.cvCreateCameraCapture(camIndex)
             | :? PiCamCV.Capture.Resolution as res -> 
                 match res.Width with 
                 | 0 -> ptr <- CvInvokeRaspiCamCV.cvCreateCameraCapture(camIndex)
                 | _ -> ptr <- CvInvokeRaspiCamCV.cvCreateCameraCapture2(camIndex, config)
             | _ -> failwith "Errored in initCapture"            
-            Console.WriteLine("ptr value = {0}", ptr)
+ 
             if(ptr = IntPtr.Zero) then raise (NullReferenceException(String.Format("Error: Unable to create capture from camera {0}", camIndex)))
                 
         do
-            initCapture(camIndex, config)        
+            this.Config <- config
+            initCapture()        
         
                         
         member val FlipType = FlipType.None with get, set
         member val CapturePtr = ptr with get, set
-//        member val Run = run with get
 
+        member this.CaptureConfig with get () = this.Config and set (value) = this.Config <- value
         member this.Stop() = (this :> ICaptureGrab).Stop()        
         member this.Retrieve(outputArray : IOutputArray) = (this :> ICaptureGrab).Retrieve(outputArray)
         
@@ -101,45 +64,38 @@
                                                                         and set (value) = match value with true -> this.FlipType <- Emgu.CV.CvEnum.FlipType.Vertical | _ -> this.FlipType <- Emgu.CV.CvEnum.FlipType.None
 
             member this.GetCaptureProperty(index : CapProp) = CvInvokeRaspiCamCV.cvGetCaptureProperty(this.Ptr, camIndex)
-            member this.SetCaptureProperty(property : CapProp, value : double) = true
+            member this.SetCaptureProperty(property : CapProp, value : double) =                 
+                let returned = CvInvokeRaspiCamCV.cvSetCaptureProperty(this.Ptr, (int)property, value)                
+                true
+            
             member this.Start() = 
-                Console.WriteLine("Inside start method CapturePi")
-                
+                //Console.WriteLine("DEBUG: About to start running")        
                 match grabState with
                 | GrabState.Pause -> grabState <- GrabState.Running
                 | GrabState.Stopped | GrabState.Stopping -> 
                     grabState <- GrabState.Running                                            
                 | _ -> ignore()
-                
-                Console.WriteLine("DEBUG: About to start running")
-//                this.Run |> ignore
-                                
-                            
+                                    
             member this.Pause() = if(grabState = GrabState.Running) then grabState <- GrabState.Pause
             member this.Stop() = if(grabState <> GrabState.Stopped) then if(grabState <> GrabState.Stopping) then grabState <- GrabState.Stopping            
             member this.Retrieve(outputArray : IOutputArray) = 
-                Console.WriteLine("DEBUG: Inside retrieve method CapturePi")
+                //Console.WriteLine("DEBUG: Inside retrieve method CapturePi")
                 
-                
-                
-                if(this.FlipType = FlipType.None) then                
-                    Console.WriteLine("DEBUG: No flip type: CapturePi")
-                    Console.WriteLine("DEBUG: Attempt PInvoke CapturePi")
-                    Console.WriteLine("DEBUG: Capture ptr value {0}", this.CapturePtr)
-                    let ptr = CvInvokeRaspiCamCV.cvQueryFrame(this.CapturePtr)
-                    Console.WriteLine("DEBUG: New ptr {0}", ptr)
-                    Console.WriteLine("DEBUG: Died? CapturePi")
-                    use m : Mat = CvInvoke.CvArrToMat(ptr)
-                    m.CopyTo(outputArray)                     
-                    Console.WriteLine("DEBUG: Returning true CapturePi")
-                    true
-                else                
-                    use tmp = new Mat()
-                    let ptr = CvInvokeRaspiCamCV.cvQueryFrame(this.CapturePtr)
-                    let managedImage = Image<Bgr, Byte>.FromIplImagePtr(ptr)
-                    managedImage.Mat.CopyTo(tmp)
-                    CvInvoke.Flip(tmp, outputArray, this.FlipType)       
-                    true
+                match grabState with
+                | GrabState.Pause | GrabState.Stopped | GrabState.Stopping -> false
+                | GrabState.Running ->                 
+                                if(this.FlipType = FlipType.None) then                              
+                                    let ptr = CvInvokeRaspiCamCV.cvQueryFrame(this.CapturePtr)                                                                        
+                                    use m : Mat = CvInvoke.CvArrToMat(ptr)                                    
+                                    m.CopyTo(outputArray)                                                         
+                                    true
+                                else                
+                                    use tmp = new Mat()
+                                    let ptr = CvInvokeRaspiCamCV.cvQueryFrame(this.CapturePtr)
+                                    let managedImage = Image<Bgr, Byte>.FromIplImagePtr(ptr)
+                                    managedImage.Mat.CopyTo(tmp)
+                                    CvInvoke.Flip(tmp, outputArray, this.FlipType)       
+                                    true
             member this.QueryFrame() =                
                 if(ptr = IntPtr.Zero) then ignore()                                
                 let image = new Mat()
@@ -148,7 +104,7 @@
                 
             member this.QuerySmallFrame() = raise (NotImplementedException("Not yet implemented."))
 
-        new() = new CapturePi(0, new CaptureConfig(new Resolution(300, 300), 0, 0, false))
+        new() = new CapturePi(0, new CaptureConfig(new Resolution(300, 300), 20, 20, false))
             
         new(config: CaptureConfig) = new CapturePi(0, config)
         

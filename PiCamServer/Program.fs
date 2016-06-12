@@ -14,7 +14,19 @@
     type User(context: UserContext) = 
         member this.Context = context
 
-    type TankSession() = 
+    type UpdateValues = { Status: string; Width: double; Height: double; Colour: int  }
+    type ReturnValues = { Type: string; Message: string}
+
+    type TankSession() as this = 
+           
+        [<DefaultValue>]
+        val mutable CamColour : CameraColour
+
+        [<DefaultValue>]
+        val mutable CamWidth : double
+
+        [<DefaultValue>]
+        val mutable CamHeight : double
                
         (* A list of our consumers - we have the ability to set up multiple consumers if we wish which we could use to manipulate the image
         frames differently from the same camera. *)
@@ -31,13 +43,29 @@
 
         let broadcast(message: string) =
             for user in onlineUsers do
-                user.Context.Send(message)
+                let returnValue = { Type = "image"; Message = message}
+                user.Context.Send(JsonConvert.SerializeObject(returnValue))
         
         let onReceiveDelegate : OnEventDelegate = new OnEventDelegate(fun (context: UserContext) -> 
                                                                         try
                                                                             let json = context.DataFrame.ToString();
-                                                                            let deObj = JsonConvert.DeserializeObject(json)                                                                            
-                                                                            context.Send("Hi")
+                                                                            let deObj = JsonConvert.DeserializeObject<UpdateValues>(json)                                                                            
+                                                                            
+                                                                            match deObj.Colour with
+                                                                            | 0 -> this.CameraColour <- CameraColour.Gray
+                                                                            | 1 -> this.CameraColour <- CameraColour.Bgr
+                                                                            | 2 -> this.CameraColour <- CameraColour.Bgra
+                                                                            | 3 -> this.CameraColour <- CameraColour.Hsv
+                                                                            | 4 -> this.CameraColour <- CameraColour.Hls
+                                                                            | 5 -> this.CameraColour <- CameraColour.Lab
+                                                                            | 6 -> this.CameraColour <- CameraColour.Luv
+                                                                            | 7 -> this.CameraColour <- CameraColour.Xyz
+                                                                            | 8 -> this.CameraColour <- CameraColour.Ycc
+                                                                            | _ -> this.CameraColour <- CameraColour.Bgr
+
+                                                                            this.CameraHeight <- deObj.Height
+                                                                            this.CameraWidth <- deObj.Width
+
                                                                         with
                                                                             | :? Exception as e -> 
                                                                                 context.Send(JsonConvert.SerializeObject(e.Message))                                                                                
@@ -64,11 +92,27 @@
             | _    -> broadcast("User disconnected")
                             
         ) 
+        
+        member this.CameraColour with 
+                                        get () = this.CamColour and 
+                                        set (value) = 
+                                            Console.WriteLine("DEBUG: Updating camera colour")
+                                            this.CamColour <- value
+        member this.CameraHeight with 
+                                        get () = this.CamHeight and 
+                                        set (value) = 
+                                            Console.WriteLine("DEBUG: Updating camera height")
+                                            this.CamHeight <- value
+        member this.CameraWidth with 
+                                        get () = this.CamWidth and 
+                                        set (value) = 
+                                            Console.WriteLine("DEBUG: Updating camera width")
+                                            this.CamWidth <- value
             
         (* The CaptureConfig class is used to hold individual properties which can be used to manipulate the image returned via EmguCV. The properties
         in this class include setting the width/height of the image and bitrate/framerate if we so wish. *)
         member this.GenerateCaptureConfig() : CaptureConfig = 
-            let config = new CaptureConfig(new Resolution(300, 300), 0, 0, false)        
+            let config = new CaptureConfig(new Resolution(300, 300), 20, 20, false)        
             config.Res.Height <- 200
             config.Res.Width <- 300
             config
@@ -82,8 +126,8 @@
                                     let cons = consumers.Item 0
                                     match box cons with
                                     | null ->  broadcast("null")
-                                    | _    ->  let imageByteArray = cons.ImageGrabbedHandler
-                                               Console.WriteLine(imageByteArray)
+                                    | _    ->  let imageByteArray = cons.ImageGrabbedHandler(this.CameraColour, this.CameraHeight, this.CameraWidth)
+                                               //Console.WriteLine(imageByteArray)
                                                let base64Str = Convert.ToBase64String(imageByteArray)                                             
                                                broadcast base64Str |> ignore)
                                    
@@ -110,7 +154,7 @@
         (* By passing in an instance of the ICaptureGrab object, we can create instances of our consumers within here. The consumers are then
         stored within our list of consumers. *)
         member this.SetupCameraConsumers(capture: ICaptureGrab) : unit =
-            let basicCapture = new BasicCaptureControl(capture)           
+            let basicCapture = new BasicCaptureControl(capture, this.CameraColour)
             consumers.Add(basicCapture)
         
         (* This is the method which is used to get an instance of the capture which acts as a handle on the camera. Once we have the handle, we can
@@ -123,10 +167,7 @@
             let capture = CaptureFactory.GetCapture request
             Console.WriteLine("DEBUG: Attempting to start camera")
             capture.Start()
-            match box capture with
-            | null -> Console.WriteLine("capture is null")
-            | _ -> Console.WriteLine("capture is not null")
-                        
+                                  
             this.StartCamera() |> ignore
             this.SetupCameraConsumers capture
             ignore
@@ -145,6 +186,7 @@
 
     [<EntryPoint>]
     let main argv = 
+                
         let tankSession = new TankSession()
         let serverInstance = tankSession.CreateServerInstance()        
         tankSession.SetupCapture(0, CaptureDevice.Pi) |> ignore
