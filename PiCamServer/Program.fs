@@ -93,6 +93,7 @@
                             
         ) 
         
+        (* Member functions to change the Colour/Height/Width of image on the fly. *)
         member this.CameraColour with 
                                         get () = this.CamColour and 
                                         set (value) = 
