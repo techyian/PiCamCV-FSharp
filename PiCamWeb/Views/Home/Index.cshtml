@@ -1,52 +1,73 @@
-<div class="jumbotron">
-    <h1>F# + ASP.NET</h1>
-    <p class="lead">
-        Pure F# ASP.NET web apps are a combination of several excellent technologies that allow you to build complex web applications in less time. To make your experience
-        even more appealing, we recommend following the instructions on
-        <a href="http://bloggemdano.blogspot.com/2013/11/adding-new-items-to-pure-f-aspnet.html">this blog post</a> and
-        installing the <a href="http://visualstudiogallery.msdn.microsoft.com/f1dae7fe-1ecc-4f1b-86b5-32a2970d012a?SRC=Home">F# Web Item Templates</a>.
-    </p>
-    <p>To learn more about ASP.NET MVC or Web API visit the <a href="http://go.microsoft.com/fwlink/?LinkId=301870">ASP.NET site</a>.</p>
-    <p>To learn more about web programming in F# visit <a href="http://fsharp.org/webstacks/">fsharp.org</a></p>
+<div class="row">
+    <div class="col-md-12">
+        <div class="jumbotron">
 
-    <a role="button" class="btn btn-default btn-large" id="startStopBtn">Start/Stop</a>
+            <h1>PiCamCV-FSharp</h1>
 
-    <div id="status"></div>
+            <h4>This project demonstrates the following technologies:</h4>
 
-    <h4>Controls</h4>
+            <ol>
+                <li>F#</li>
+                <li>Emgu CV</li>
+                <li>WebSockets (Alchemy WebSockets)</li>
+                <li>ASP.NET</li>
+            </ol>
 
-    <div class="form-group">
-        <label for="width">Width</label>
-        <input type="text" id="width" class="form-control" placeholder="Width" />        
+            <h4>Start the associated WebSocket server in the PiCamServer project, and click on the Start/Stop button below to begin viewing Camera imaging.</h4>
+        </div>
+        
+        
+        <div class="text-center">
+            <h3 class="text-center">Camera 1</h3>
+            <p>Status: <span id="status"></span></p>
+        </div>
+        
+
+
+        <div class="col-md-6">
+
+            <h4>Controls</h4>
+
+            <div class="form-group">
+                <label for="width">Width</label>
+                <input type="text" id="width" class="form-control" placeholder="Width" />
+            </div>
+
+            <div class="form-group">
+                <label for="width">Height</label>
+                <input type="text" id="height" class="form-control" placeholder="Height" />
+            </div>
+
+            <div class="form-group">
+                <label for="colour">Colour</label>
+                <select id="colour" class="form-control">
+                    <option value="0">Gray</option>
+                    <option value="1">Bgr</option>
+                    <option value="2">Bgra</option>
+                    <option value="3">Hsv</option>
+                    <option value="4">Hls</option>
+                    <option value="5">Lab</option>
+                    <option value="6">Luv</option>
+                    <option value="7">Xyz</option>
+                    <option value="8">Ycc</option>
+                </select>
+            </div>
+            
+            <a role="button" class="btn btn-default btn-large" id="startStopBtn">Start/Stop</a>
+            <a role="button" id="submitBtn" class="btn btn-primary">Save settings</a>
+        </div>
+
+        <div class="col-md-6">
+            <img id="testImg" class="tmargin15" src="" />
+        </div>
+
+        
     </div>
-
-    <div class="form-group">
-        <label for="width">Height</label>
-        <input type="text" id="height" class="form-control" placeholder="Height" />
-    </div>
-
-    <div class="form-group">
-        <label for="colour">Colour</label>
-        <select id="colour" class="form-control">
-            <option value="0">Gray</option>
-            <option value="1">Bgr</option>
-            <option value="2">Bgra</option>
-            <option value="3">Hsv</option>
-            <option value="4">Hls</option>
-            <option value="5">Lab</option>
-            <option value="6">Luv</option>
-            <option value="7">Xyz</option>
-            <option value="8">Ycc</option>
-        </select>                
-    </div>
-
-    <a role="button" id="submitBtn" class="btn btn-primary">Save</a>
-
-    <div class="clearfix"></div>
-       
-    <img id="testImg" src="" />
-
+    
+    
 </div>
+
+
 
 @section Scripts {
     
@@ -63,8 +84,8 @@
             function Connect() {
                 // If we're using the Flash fallback, we need Flash.
                 if (!window.WebSocket && !swfobject.hasFlashPlayerVersion('10.0.0')) {
-                alert('Flash Player >= 10.0.0 is required.');
-                return;
+                    alert('Flash Player >= 10.0.0 is required.');
+                    return;
                 }
 
                 // Set up the Alchemy client object
@@ -81,17 +102,24 @@
                 AlchemyServer.Connected = function() {
                     $('#status').removeClass('pending').addClass('online').text('Connected...');
                     console.log('Connection established!');
-                    running = !running;
+
+                    if (!running) {
+                        running = !running;
+                    }                    
                 };
 
                 AlchemyServer.Disconnected = function () {
                     $('#status').removeClass('online').addClass('offline').text('Disconnected...');
                     console.log('Connection closed.');
-                    running = !running;
+
+                    if (running) {
+                        running = !running;
+                    }
+                    
                 };
 
                 AlchemyServer.MessageReceived = function(event) {
-                ParseResponse(event.data);
+                    ParseResponse(event.data);
                 };
 
                 AlchemyServer.Start();
@@ -112,10 +140,27 @@
             $('#submitBtn').click(function () {
 
                 if (running) {
-                    var height = $('#height').val();
-                    var width = $('#width').val();
-                    var colour = $('#colour').val();
-
+                    var height, width, colour;
+                    
+                    if($('#height').val()) {
+                        height = $('#height').val();
+                    }
+                    else {
+                        height = 300.0;
+                    }
+                    if ($('#width').val()) {
+                        width = $('#width').val();
+                    }
+                    else {
+                        width = 500.0;
+                    }
+                    if ($('#colour').val()) {
+                        colour = $('#colour').val();
+                    }
+                    else {
+                        colour = 1;
+                    }
+                                        
                     AlchemyServer.Send({ Status: "connect", Width: width, Height: height, Colour: colour });
                 }
 

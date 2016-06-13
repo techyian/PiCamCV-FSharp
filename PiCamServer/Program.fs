@@ -48,7 +48,7 @@
         
         let onReceiveDelegate : OnEventDelegate = new OnEventDelegate(fun (context: UserContext) -> 
                                                                         try
-                                                                            let json = context.DataFrame.ToString();
+                                                                            let json = context.DataFrame.ToString();                                                                          
                                                                             let deObj = JsonConvert.DeserializeObject<UpdateValues>(json)                                                                            
                                                                             
                                                                             match deObj.Colour with

@@ -57,7 +57,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'PIUSBCAM|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DefineConstants>PIUSBCAM</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;PIUSBCAM</DefineConstants>
     <OutputPath>bin\PIUSBCAM\</OutputPath>
   </PropertyGroup>
   <Choose>
