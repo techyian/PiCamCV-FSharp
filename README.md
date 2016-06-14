@@ -18,3 +18,8 @@ I also wanted to try to learn F#, so this is my first attempt, and I will look a
 
 Full instructions on how to build Emgu CV and get the code running on your Raspberry Pi are documented here: http://www.techyian.co.uk/f-emgu-cv-and-asp-net-robotics-project-part-2/
 
+### Working so far
+
+The below is a video of PiCamCV-FSharp in action using a Microsoft Lifecam. It demonstrates the different colour schemes you can apply to the footage.
+
+[![PiCamCV-FSharp USB Camera](http://img.youtube.com/vi/eqI_kZlVaHc/0.jpg)](http://www.youtube.com/watch?v=eqI_kZlVaHc "PiCamCV-FSharp USB Camera")
