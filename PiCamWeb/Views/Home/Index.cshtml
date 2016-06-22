@@ -72,7 +72,7 @@
 @section Scripts {
     
     <script type="text/javascript" src="~/Scripts/alchemy-client.js"></script>
-
+    
     <script type="text/javascript">
 
         $(document).ready(function () {
@@ -90,7 +90,8 @@
 
                 // Set up the Alchemy client object
                 AlchemyServer = new Alchemy({
-                    Server: '192.168.1.209',
+                    //Server: '192.168.1.209',
+                    Server: 'localhost',
                     Port: '81',
                     Action: 'chat',
                     DebugMode: true

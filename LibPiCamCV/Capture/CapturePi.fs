@@ -27,11 +27,7 @@
         let mutable ptr = this._ptr
                 
         let mutable grabState = GrabState.Stopped
-                
-        let imageGrabbed = new Event<EventHandler, EventArgs>()
-
-        let wait(millisecond : int) = Thread.Sleep(millisecond)
-
+         
         let initCapture () =           
             Console.WriteLine("DEBUG: About to INIT.")                  
             match box config.Res with
@@ -39,7 +35,7 @@
             | :? PiCamCV.Capture.Resolution as res -> 
                 match res.Width with 
                 | 0 -> ptr <- CvInvokeRaspiCamCV.cvCreateCameraCapture(camIndex)
-                | _ -> ptr <- CvInvokeRaspiCamCV.cvCreateCameraCapture2(camIndex, config)
+                | _ -> ptr <- CvInvokeRaspiCamCV.cvCreateCameraCapture(camIndex)
             | _ -> failwith "Errored in initCapture"            
  
             if(ptr = IntPtr.Zero) then raise (NullReferenceException(String.Format("Error: Unable to create capture from camera {0}", camIndex)))
@@ -62,7 +58,7 @@
                                                                         and set (value) = match value with true -> this.FlipType <- Emgu.CV.CvEnum.FlipType.Horizontal | _ -> this.FlipType <- Emgu.CV.CvEnum.FlipType.None
             member this.FlipVertical with get () : bool = (this.FlipType &&& Emgu.CV.CvEnum.FlipType.Vertical) = Emgu.CV.CvEnum.FlipType.Vertical
                                                                         and set (value) = match value with true -> this.FlipType <- Emgu.CV.CvEnum.FlipType.Vertical | _ -> this.FlipType <- Emgu.CV.CvEnum.FlipType.None
-
+            
             member this.GetCaptureProperty(index : CapProp) = CvInvokeRaspiCamCV.cvGetCaptureProperty(this.Ptr, camIndex)
             member this.SetCaptureProperty(property : CapProp, value : double) =                 
                 let returned = CvInvokeRaspiCamCV.cvSetCaptureProperty(this.Ptr, (int)property, value)                
@@ -85,14 +81,18 @@
                 | GrabState.Pause | GrabState.Stopped | GrabState.Stopping -> false
                 | GrabState.Running ->                 
                                 if(this.FlipType = FlipType.None) then                              
-                                    let ptr = CvInvokeRaspiCamCV.cvQueryFrame(this.CapturePtr)                                                                        
-                                    use m : Mat = CvInvoke.CvArrToMat(ptr)                                    
-                                    m.CopyTo(outputArray)                                                         
+  
+                                    let ptr = CvInvokeRaspiCamCV.cvQueryFrame(this.CapturePtr)
+                                    use managedImage = Image<Bgr, Byte>.FromIplImagePtr(ptr)                                
+                                    managedImage.Mat.CopyTo(outputArray)                    
+                                    Console.WriteLine("Disposing managedImage")
+                                    managedImage.Dispose()
+                                                                        
                                     true
                                 else                
                                     use tmp = new Mat()
                                     let ptr = CvInvokeRaspiCamCV.cvQueryFrame(this.CapturePtr)
-                                    let managedImage = Image<Bgr, Byte>.FromIplImagePtr(ptr)
+                                    use managedImage = Image<Bgr, Byte>.FromIplImagePtr(ptr)
                                     managedImage.Mat.CopyTo(tmp)
                                     CvInvoke.Flip(tmp, outputArray, this.FlipType)       
                                     true
@@ -110,7 +110,7 @@
         
         member val _captureModuleType : CaptureModuleType = CaptureModuleType.Camera with get, set
 
-        override x.DisposeObject() = 
+        override x.DisposeObject() =             
             Console.WriteLine("Releasing capture CapturePi")            
             this.Stop()
             CvInvokeRaspiCamCV.cvReleaseCapture(this._ptr)

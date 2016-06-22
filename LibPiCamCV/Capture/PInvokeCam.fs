@@ -10,14 +10,6 @@ module CvInvokeRaspiCamCV =
     open PiCamCV.Capture.Interfaces
 
 
-    let osCheck = 
-        let p = Environment.OSVersion.Platform.ToString()
-        match p with
-        | "4" | "6" | "128" -> "unix"
-        | _ -> "other"
-
-
-
  #if PICAM    
     [<Literal>]
     let CVLibrary = "raspicamcv";
@@ -56,7 +48,7 @@ module CvInvokeRaspiCamCV =
     [<Literal>]
     let EntryPointCapture = "cvCreateCameraCapture"
     [<Literal>]
-    let EntryPointCapture2 = ""cvCreateCameraCapture""
+    let EntryPointCapture2 = "cvCreateCameraCapture"
     [<Literal>]
     let EntryPointQuery = "cvQueryFrame"
     [<Literal>]

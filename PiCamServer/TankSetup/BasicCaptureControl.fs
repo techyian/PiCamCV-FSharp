@@ -4,57 +4,73 @@
     open Emgu.CV.CvEnum
     open Emgu.CV.Structure
     open PiCamCV.Capture.Interfaces
+    open System.IO.Compression
+    open System.Diagnostics
+    open Newtonsoft.Json
+    open System.IO
+    open PiCamCV.Capture
             
     type BasicCaptureControl(capture: ICaptureGrab) = 
         inherit BaseCameraConsumer(capture)
                                
         new(capture, camColour) = BasicCaptureControl(capture)
 
-        override x.ImageGrabbedHandler with get (cameraColour: CameraColour, width: double, height: double) : byte[] =
+        override x.ImageGrabbedHandler with get (cameraColour: CameraColour, res: Resolution) : byte[] =
                                         use mat = new Mat()
-                                        capture.SetCaptureProperty(CapProp.FrameWidth, width) |> ignore
-                                        capture.SetCaptureProperty(CapProp.FrameHeight, height) |> ignore
+                                        //capture.SetCaptureProperty(CapProp.FrameWidth, width) |> ignore
+                                        //capture.SetCaptureProperty(CapProp.FrameHeight, height) |> ignore
                                         //Console.WriteLine("DEBUG: Attempt to retrieve frame")
                                         let ret = capture.Retrieve(mat)
                                         
+                                        Console.WriteLine("I retrieved the image {0}", ret)
                                         match ret with
                                         | true ->                                                
-                                                let captured = mat.ToImage<Bgra, byte>()
-                                                match cameraColour with
-                                                | CameraColour.Gray -> 
-                                                            let grayScale = captured.Convert<Gray, Byte>().ToJpegData(90)
-                                                            grayScale
-                                                | CameraColour.Bgr -> 
-                                                            let bgrScale = captured.Convert<Bgr, Byte>().ToJpegData(90)
-                                                            bgrScale
-                                                | CameraColour.Bgra -> 
-                                                            let bgraScale = captured.Convert<Bgra, Byte>().ToJpegData(90)
-                                                            bgraScale
-                                                | CameraColour.Hsv -> 
-                                                            let hsvScale = captured.Convert<Hsv, Byte>().ToJpegData(90)
-                                                            hsvScale
-                                                | CameraColour.Hls -> 
-                                                            let hlsScale = captured.Convert<Hls, Byte>().ToJpegData(90)
-                                                            hlsScale
-                                                | CameraColour.Lab -> 
-                                                            let labScale = captured.Convert<Lab, Byte>().ToJpegData(90)
-                                                            labScale
-                                                | CameraColour.Luv -> 
-                                                            let luvScale = captured.Convert<Luv, Byte>().ToJpegData(90)
-                                                            luvScale
-                                                | CameraColour.Xyz -> 
-                                                            let xyzScale = captured.Convert<Xyz, Byte>().ToJpegData(90)
-                                                            xyzScale
-                                                | CameraColour.Ycc -> 
-                                                            let yccScale = captured.Convert<Ycc, Byte>().ToJpegData(90)
-                                                            yccScale
-                                                | _ -> 
-                                                            let normalScale = captured.ToJpegData(90)
-                                                            normalScale
+                                                let stopwatch = new Stopwatch()
+
+                                                stopwatch.Start()
+                                                
+                                                use captured = mat.ToImage<Bgra, byte>()
+                                                
+                                                use bitmap = 
+                                                        match cameraColour with
+                                                        | CameraColour.Gray -> 
+                                                                    captured.Convert<Gray, Byte>().Bitmap                                                                    
+                                                        | CameraColour.Bgr -> 
+                                                                    captured.Convert<Bgr, Byte>().Bitmap                                                                    
+                                                        | CameraColour.Bgra -> 
+                                                                    captured.Convert<Bgra, Byte>().Bitmap                                                                    
+                                                        | CameraColour.Hsv -> 
+                                                                    captured.Convert<Hsv, Byte>().Bitmap                                                                    
+                                                        | CameraColour.Hls -> 
+                                                                    captured.Convert<Hls, Byte>().Bitmap                                                                    
+                                                        | CameraColour.Lab -> 
+                                                                    captured.Convert<Lab, Byte>().Bitmap                                                                    
+                                                        | CameraColour.Luv -> 
+                                                                    captured.Convert<Luv, Byte>().Bitmap                                                                    
+                                                        | CameraColour.Xyz -> 
+                                                                    captured.Convert<Xyz, Byte>().Bitmap                                                                    
+                                                        | CameraColour.Ycc -> 
+                                                                    captured.Convert<Ycc, Byte>().Bitmap                                                                    
+                                                        | _ -> 
+                                                                    captured.Bitmap
+                                                
+                                                use memStream = new MemoryStream()
+                                                bitmap.Save(memStream, System.Drawing.Imaging.ImageFormat.Jpeg)
+
+                                                stopwatch.Stop()
+                                                Console.WriteLine("PERF: Taking image: {0}", stopwatch.Elapsed)
+                                                
+                                                captured.Dispose() |> ignore
+                                                
+                                                mat.Dispose() |> ignore
+
+                                                memStream.ToArray()
+
 
                                         | false -> 
                                                 Console.WriteLine("DEBUG: Retrieve returned false. GrabState assumed not running.")
                                                 Array.empty<byte>
+                                                
                                                                              
                                         
                                            

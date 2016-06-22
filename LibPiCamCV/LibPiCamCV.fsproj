@@ -48,7 +48,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'UNIX|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <OutputPath>bin\UNIX\</OutputPath>
-    <DefineConstants>PICAM</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;PICAM</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'WINUSBCAM|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
